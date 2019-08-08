@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mandelbrot</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+<body>
+
+<div id="controls">
+    <table>
+        <tr>
+            <td>
+                Centre
+            </td>
+            <td>
+                <input type="number" step="any" id="centerX" value="-1.2"/>
+                <input type="number" step="any" id="centerY" value="-0.2"/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Zoom
+            </td>
+            <td>
+                <input type="number" step="any" id="zoom" value="500"/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Itérations max
+            </td>
+            <td>
+                <input type="number" id="maxIter" value="256"/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Threads
+            </td>
+            <td>
+                <input type="number" id="threads" value="8"/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="submit" value="Go" id="go"/>
+            </td>
+            <td>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="text" id="x"/>
+            </td>
+            <td>
+                <input type="text" id="y"/>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<img width="800" height="800" id="output"
+     src="http://localhost:8080?maxIter=256&zoom=500&width=800&height=800&threads=8&centerX=-1.2&centerY=-0.2"/>
+
+<script>
+
+$("#output").click(function( event ) {
+    var offset = $(this).offset();
+    var x = parseFloat(event.pageX - offset.left);
+    var y = parseFloat(event.pageY - offset.top);
+
+    var centerX = parseFloat($("#centerX").val());
+    var centerY = parseFloat($("#centerY").val());
+    var zoom = parseFloat($("#zoom").val());
+
+    var cReal = centerX + (x/800 - 0.5) / zoom;
+    var cImaginary = centerY + (y/800 - 0.5) / zoom;
+
+    $("#x").val(cReal);
+    $("#y").val(cImaginary);
+
+    goto(cReal, cImaginary, zoom * 1.5);
+});
+
+$("#go").click(function( event ) {
+    goto($("#centerX").val(), $("#centerY").val(), $("#zoom").val());
+});
+function goto(centerX, centerY, zoom) {
+    $("#centerX").val(centerX);
+    $("#centerY").val(centerY);
+    $("#zoom").val(zoom);
+
+    var maxIter = $("#maxIter").val();
+    var threads = $("#threads").val();
+
+    console.log("Going to", centerX, centerY, "at zoom level", zoom);
+
+    var url = "http://localhost:8080?maxIter=" + maxIter + "&zoom=" + zoom + "&width=800&height=800&threads=" + threads + "&centerX=" + centerX + "&centerY=" + centerY;
+
+    console.log("url =", url);
+
+    $("#output").attr("src", url);
+}
+
+</script>
+</body>
+</html>
